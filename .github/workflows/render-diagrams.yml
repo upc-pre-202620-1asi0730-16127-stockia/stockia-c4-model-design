@@ -1,0 +1,59 @@
+name: Render PlantUML Diagrams
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+    paths:
+      - "stockia-c4-model-design/**.puml"
+  workflow_dispatch: {}
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create output folders
+        run: |
+          mkdir -p src/images/context-diagram
+          mkdir -p src/images/container-diagram
+          mkdir -p src/images/component-diagram
+
+      - name: Render Context Diagrams to SVG
+        uses: docker://plantuml/plantuml:latest
+        with:
+          args: -tsvg -o ../../src/images/context-diagram stockia-c4-model-design/ContextDiagram/*.puml
+
+      - name: Render Context Diagrams to PNG
+        uses: docker://plantuml/plantuml:latest
+        with:
+          args: -tpng -o ../../src/images/context-diagram stockia-c4-model-design/ContextDiagram/*.puml
+
+      - name: Render Container Diagrams to SVG
+        uses: docker://plantuml/plantuml:latest
+        with:
+          args: -tsvg -o ../../src/images/container-diagram stockia-c4-model-design/ContainerDiagram/*.puml
+
+      - name: Render Container Diagrams to PNG
+        uses: docker://plantuml/plantuml:latest
+        with:
+          args: -tpng -o ../../src/images/container-diagram stockia-c4-model-design/ContainerDiagram/*.puml
+
+      - name: Render Component Diagrams to SVG
+        uses: docker://plantuml/plantuml:latest
+        with:
+          args: -tsvg -o ../../src/images/component-diagram stockia-c4-model-design/ComponentDiagram/*.puml
+
+      - name: Render Component Diagrams to PNG
+        uses: docker://plantuml/plantuml:latest
+        with:
+          args: -tpng -o ../../src/images/component-diagram stockia-c4-model-design/ComponentDiagram/*.puml
+
+      - name: Commit rendered images
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: regenerate diagram images from .puml sources"
+          file_pattern: "src/images/**"

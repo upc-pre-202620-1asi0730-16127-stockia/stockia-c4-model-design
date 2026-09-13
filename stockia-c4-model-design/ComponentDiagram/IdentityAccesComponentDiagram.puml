@@ -1,0 +1,35 @@
+@startuml identity-access-component
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title StockIA - Identity & Access Management (Component Diagram)
+
+Person(restaurant_administrator, "Administrator / CEO", "Single application user. Restaurant owner or manager.")
+
+Container_Boundary(rest_api, "REST API") {
+    Component(auth_controller, "Auth Controller", "Spring Boot REST Controller", "Handles login, registration, password recovery and token validation requests.")
+    Component(user_controller, "User Controller", "Spring Boot REST Controller", "Handles account and profile management requests for the administrator.")
+
+    Component(auth_service, "Auth Service", "Spring Service", "Coordinates authentication rules and validates user credentials.")
+    Component(token_service, "Token Service", "Spring Security, JWT", "Generates, validates and refreshes JWT access tokens.")
+    Component(password_recovery_service, "Password Recovery Service", "Spring Service", "Generates and validates password recovery tokens/links.")
+
+    Component(user_repository, "User Repository", "Spring Data JPA", "Reads and writes user and credential data.")
+}
+
+ContainerDb(database, "Database", "MySQL", "Stores users and credentials.")
+
+Rel(restaurant_administrator, auth_controller, "Authenticates", "JSON/HTTPS")
+Rel(restaurant_administrator, user_controller, "Manages account", "JSON/HTTPS")
+
+Rel(auth_controller, auth_service, "Delegates authentication logic")
+Rel(auth_controller, password_recovery_service, "Delegates recovery flow")
+Rel(user_controller, user_repository, "Manages identity data")
+
+Rel(auth_service, user_repository, "Validates credentials")
+Rel(auth_service, token_service, "Generates and validates JWT")
+Rel(password_recovery_service, user_repository, "Looks up user and updates password")
+
+Rel(user_repository, database, "Reads/writes", "SQL")
+
+SHOW_LEGEND()
+@enduml
