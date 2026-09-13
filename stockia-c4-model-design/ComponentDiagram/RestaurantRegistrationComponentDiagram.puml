@@ -1,0 +1,28 @@
+@startuml restaurant-registration-component
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title StockIA - Restaurant Registration (Component Diagram)
+
+Person(restaurant_administrator, "Administrator / CEO", "Single application user. Restaurant owner or manager.")
+
+Container_Boundary(rest_api, "REST API") {
+    Component(restaurant_controller, "Restaurant Controller", "Spring Boot REST Controller", "Handles restaurant profile registration and update requests.")
+    Component(restaurant_service, "Restaurant Service", "Spring Service", "Applies business rules for restaurant registration and validates restaurant data.")
+    Component(restaurant_repository, "Restaurant Repository", "Spring Data JPA", "Reads and writes restaurant profile data.")
+
+    Component_Ext(auth_service, "Auth Service", "Identity & Access BC", "Validates the administrator's session/token before allowing registration actions.")
+}
+
+ContainerDb(database, "Database", "MySQL", "Stores restaurant profile data.")
+
+Rel(restaurant_administrator, restaurant_controller, "Registers / updates restaurant profile", "JSON/HTTPS")
+
+Rel(restaurant_controller, auth_service, "Validates authenticated administrator")
+Rel(restaurant_controller, restaurant_service, "Delegates registration logic")
+
+Rel(restaurant_service, restaurant_repository, "Persists restaurant profile data")
+
+Rel(restaurant_repository, database, "Reads/writes", "SQL")
+
+SHOW_LEGEND()
+@enduml

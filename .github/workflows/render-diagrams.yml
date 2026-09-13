@@ -51,14 +51,19 @@ jobs:
               -v "${PWD}":/workspace \
               -w /workspace \
               plantuml/plantuml:latest \
-              -tsvg -o "../${dest_dir}" "${files[@]}"
+              -tsvg -o "/workspace/${dest_dir}" "${files[@]}"
 
             docker run --rm \
               -v "${PWD}":/workspace \
               -w /workspace \
               plantuml/plantuml:latest \
-              -tpng -o "../${dest_dir}" "${files[@]}"
+              -tpng -o "/workspace/${dest_dir}" "${files[@]}"
           done
+
+      - name: List generated images (debug)
+        run: |
+          echo "--- src/images contents ---"
+          find src/images -type f
 
       - name: Commit rendered images
         uses: stefanzweifel/git-auto-commit-action@v5
