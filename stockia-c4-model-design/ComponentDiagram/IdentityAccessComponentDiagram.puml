@@ -7,7 +7,7 @@ Person(restaurant_administrator, "Administrator / CEO", "Single application user
 
 Container_Boundary(rest_api, "REST API") {
     Component(auth_controller, "Auth Controller", "Spring Boot REST Controller", "Handles login, registration, password recovery and token validation requests.")
-    Component(user_controller, "User Controller", "Spring Boot REST Controller", "Handles account and profile management requests for the administrator.")
+    Component(user_controller, "User Controller", "Spring Boot REST Controller", "Handles account and profile management requests.")
 
     Component(auth_service, "Auth Service", "Spring Service", "Coordinates authentication rules and validates user credentials.")
     Component(token_service, "Token Service", "Spring Security, JWT", "Generates, validates and refreshes JWT access tokens.")
