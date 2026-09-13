@@ -48,12 +48,14 @@ jobs:
             echo "Rendering ${#files[@]} file(s) from ${src_dir} -> ${dest_dir}"
 
             docker run --rm \
+              --user "$(id -u):$(id -g)" \
               -v "${PWD}":/workspace \
               -w /workspace \
               plantuml/plantuml:latest \
               -tsvg -o "/workspace/${dest_dir}" "${files[@]}"
 
             docker run --rm \
+              --user "$(id -u):$(id -g)" \
               -v "${PWD}":/workspace \
               -w /workspace \
               plantuml/plantuml:latest \
