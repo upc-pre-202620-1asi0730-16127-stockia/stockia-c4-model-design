@@ -7,7 +7,7 @@ Person(restaurant_administrator, "Administrator / CEO", "Single application user
 
 Container_Boundary(rest_api, "REST API") {
     Component(restaurant_controller, "Restaurant Controller", "Spring Boot REST Controller", "Handles restaurant profile registration and update requests.")
-    Component(restaurant_service, "Restaurant Service", "Spring Service", "Applies business rules for restaurant registration and validates restaurant data.")
+    Component(restaurant_service, "Restaurant Service", "Spring Service", "Applies business rules for restaurant registration and validates.")
     Component(restaurant_repository, "Restaurant Repository", "Spring Data JPA", "Reads and writes restaurant profile data.")
 
     Component_Ext(auth_service, "Auth Service", "Identity & Access BC", "Validates the administrator's session/token before allowing registration actions.")
