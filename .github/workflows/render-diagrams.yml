@@ -22,35 +22,43 @@ jobs:
           mkdir -p src/images/container-diagram
           mkdir -p src/images/component-diagram
 
-      - name: Render Context Diagrams to SVG
-        uses: docker://plantuml/plantuml:latest
-        with:
-          args: -tsvg -o ../../src/images/context-diagram stockia-c4-model-design/ContextDiagram/*.puml
+      - name: Render existing diagrams (skip empty folders)
+        run: |
+          set -e
+          shopt -s nullglob
 
-      - name: Render Context Diagrams to PNG
-        uses: docker://plantuml/plantuml:latest
-        with:
-          args: -tpng -o ../../src/images/context-diagram stockia-c4-model-design/ContextDiagram/*.puml
+          declare -A FOLDER_MAP=(
+            ["ContextDiagram"]="context-diagram"
+            ["ContainerDiagram"]="container-diagram"
+            ["ComponentDiagram"]="component-diagram"
+          )
 
-      - name: Render Container Diagrams to SVG
-        uses: docker://plantuml/plantuml:latest
-        with:
-          args: -tsvg -o ../../src/images/container-diagram stockia-c4-model-design/ContainerDiagram/*.puml
+          for src_name in "${!FOLDER_MAP[@]}"; do
+            dest_name="${FOLDER_MAP[$src_name]}"
+            src_dir="stockia-c4-model-design/${src_name}"
+            dest_dir="src/images/${dest_name}"
 
-      - name: Render Container Diagrams to PNG
-        uses: docker://plantuml/plantuml:latest
-        with:
-          args: -tpng -o ../../src/images/container-diagram stockia-c4-model-design/ContainerDiagram/*.puml
+            files=("${src_dir}"/*.puml)
 
-      - name: Render Component Diagrams to SVG
-        uses: docker://plantuml/plantuml:latest
-        with:
-          args: -tsvg -o ../../src/images/component-diagram stockia-c4-model-design/ComponentDiagram/*.puml
+            if [ ${#files[@]} -eq 0 ]; then
+              echo "No .puml files found in ${src_dir}, skipping."
+              continue
+            fi
 
-      - name: Render Component Diagrams to PNG
-        uses: docker://plantuml/plantuml:latest
-        with:
-          args: -tpng -o ../../src/images/component-diagram stockia-c4-model-design/ComponentDiagram/*.puml
+            echo "Rendering ${#files[@]} file(s) from ${src_dir} -> ${dest_dir}"
+
+            docker run --rm \
+              -v "${PWD}":/workspace \
+              -w /workspace \
+              plantuml/plantuml:latest \
+              -tsvg -o "../${dest_dir}" "${files[@]}"
+
+            docker run --rm \
+              -v "${PWD}":/workspace \
+              -w /workspace \
+              plantuml/plantuml:latest \
+              -tpng -o "../${dest_dir}" "${files[@]}"
+          done
 
       - name: Commit rendered images
         uses: stefanzweifel/git-auto-commit-action@v5
