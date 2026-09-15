@@ -1,0 +1,28 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title StockIA - Restaurant Registration (Frontend Component Diagram)
+
+Person(restaurant_administrator, "Administrator / CEO", "Single application user. Restaurant owner or manager.")
+
+Container_Boundary(frontend, "Frontend (SPA)") {
+    Component(restaurant_registration_component, "Restaurant Registration Component", "UI Component", "Renders the restaurant registration and profile update forms.")
+    Component(restaurant_application_service, "Restaurant Application Service", "Application Service", "Applies client-side validation and orchestrates the registration/update use case.")
+    Component(restaurant_api_service, "Restaurant API Service", "HTTP Client", "Calls the backend Restaurant Controller endpoints to persist restaurant data.")
+
+    Component_Ext(auth_application_service, "Auth Application Service", "Identity & Access Frontend BC", "Ensures the administrator is authenticated before allowing registration actions.")
+}
+
+System_Ext(backend_api, "StockIA REST API", "Restaurant Registration BC (backend)")
+
+Rel(restaurant_administrator, restaurant_registration_component, "Registers / updates restaurant profile", "UI")
+
+Rel(restaurant_registration_component, auth_application_service, "Validates authenticated administrator")
+Rel(restaurant_registration_component, restaurant_application_service, "Delegates registration logic")
+
+Rel(restaurant_application_service, restaurant_api_service, "Sends restaurant profile data")
+
+Rel(restaurant_api_service, backend_api, "POST/PUT /restaurants", "JSON/HTTPS")
+
+SHOW_LEGEND()
+@enduml
