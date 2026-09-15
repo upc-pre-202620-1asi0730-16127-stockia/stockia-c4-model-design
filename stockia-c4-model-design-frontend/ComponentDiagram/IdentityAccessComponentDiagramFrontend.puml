@@ -1,0 +1,25 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title Component View: StockIA - Identity & Access (Frontend)
+
+Container_Boundary(frontend, "Identity & Access - Frontend") {
+
+    Component(interface_layer, "Interface", "Component: Folder", "LoginComponent, PasswordRecoveryComponent, AccountProfileComponent")
+
+    Component(application_layer, "Application", "Component: Folder", "AuthApplicationService, AccountApplicationService")
+
+    Component(domain_layer, "Domain", "Component: Folder", "User (entity), Credentials (VO); AuthApiPort, UserApiPort")
+
+    Component(infrastructure_layer, "Infrastructure", "Component: Folder", "AuthApiService, UserApiService (HTTP clients); UserAssembler; TokenStorage")
+}
+
+System_Ext(backend_api, "StockIA REST API", "Identity & Access Management BC (backend)")
+
+Rel(interface_layer, application_layer, "delegates")
+Rel(application_layer, domain_layer, "uses aggregates\nand ports")
+Rel(infrastructure_layer, domain_layer, "implements\nports")
+Rel(infrastructure_layer, backend_api, "calls", "JSON/HTTPS")
+
+SHOW_LEGEND()
+@enduml
